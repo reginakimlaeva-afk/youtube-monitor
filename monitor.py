@@ -7,7 +7,7 @@ YOUTUBE_API_KEY = "AIzaSyBEQXQN8IRngxmluniVomypIom3yfGPIVg"
 TELEGRAM_TOKEN = "8212896282:AAHllkETjlCa94yu-MDukQlh5iHp-LiuzXg"
 CHAT_ID = "-1003992190647"
 
-KEYWORDS = ["BlancVPN", "https://blanc.link/"]
+KEYWORDS = ["https"]
 VIDEO_LIMIT_PER_CHANNEL = 30
 SEEN_FILE = "seen_videos.txt"
 
