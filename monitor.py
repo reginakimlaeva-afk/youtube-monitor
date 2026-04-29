@@ -7,7 +7,7 @@ YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY")
 TELEGRAM_TOKEN = "8212896282:AAHllkETjlCa94yu-MDukQlh5iHp-LiuzXg"
 CHAT_ID = "-1003992190647"
 
-KEYWORDS = ["https"]
+KEYWORDS = ["BlancVPN", "https://blanc.link/"]
 
 VIDEO_LIMIT = 200
 RECENT_DAYS = 7
