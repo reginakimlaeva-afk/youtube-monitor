@@ -9,6 +9,11 @@ jobs:
   run-script:
     runs-on: ubuntu-latest
 
+    env:
+      YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+      TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+      CHAT_ID: ${{ secrets.CHAT_ID }}
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
