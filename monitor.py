@@ -11,6 +11,7 @@ KEYWORDS = ["BlancVPN", "https://blanc.link/"]
 
 VIDEO_LIMIT_API = 200
 SEEN_FILE = "seen_videos.txt"
+INIT_MARKER = "#INITIALIZED"
 
 CHANNELS = [
     {"name": "Max Katz", "id": "UCUGfDbfRIx51kJGGHIFo8Rw"},
@@ -33,12 +34,17 @@ CHANNELS = [
 def load_seen():
     try:
         with open(SEEN_FILE, "r", encoding="utf-8") as f:
-            return set(line.strip() for line in f if line.strip())
+            lines = [line.strip() for line in f if line.strip()]
     except FileNotFoundError:
-        return set()
+        lines = []
+
+    initialized = INIT_MARKER in lines
+    seen = set(line for line in lines if not line.startswith("#"))
+    return initialized, seen
 
 def save_seen(seen):
     with open(SEEN_FILE, "w", encoding="utf-8") as f:
+        f.write(INIT_MARKER + "\n")
         for video_id in sorted(seen):
             f.write(video_id + "\n")
 
@@ -133,7 +139,7 @@ def format_date(date_str):
     except:
         return "не указана"
 
-def has_keywords(description):
+def find_keywords(description):
     text = description.lower()
     return [k for k in KEYWORDS if k.lower() in text]
 
@@ -162,12 +168,12 @@ def main():
         print("Нет CHAT_ID")
         return
 
-    seen = load_seen()
-    first_run = len(seen) == 0
+    initialized, seen = load_seen()
 
+    print(f"База инициализирована: {initialized}")
     print(f"Уже сохранено рекламных видео: {len(seen)}")
 
-    newly_seen = set(seen)
+    updated_seen = set(seen)
 
     for channel in CHANNELS:
         print(f"\nКанал: {channel['name']}")
@@ -185,18 +191,18 @@ def main():
         for video in videos:
             video_id = video["id"]
 
-            if video_id in seen:
-                continue
-
-            found_keywords = has_keywords(video["description"])
+            found_keywords = find_keywords(video["description"])
 
             if not found_keywords:
                 continue
 
-            newly_seen.add(video_id)
+            if video_id in updated_seen:
+                continue
 
-            if first_run:
-                print(f"База создана без отправки: {video['title']}")
+            updated_seen.add(video_id)
+
+            if not initialized:
+                print(f"Добавлено в базу без отправки: {video['title']}")
                 continue
 
             message = (
@@ -211,10 +217,10 @@ def main():
             if send_telegram(message):
                 print(f"Отправлено: {video['title']}")
 
-    save_seen(newly_seen)
+    save_seen(updated_seen)
 
-    if first_run:
-        print("\nПервый запуск: база старых рекламных видео создана. Старые ролики не отправлялись.")
+    if not initialized:
+        print("\nПервый запуск после фикса: база создана. Старые ролики НЕ отправлялись.")
     else:
         print("\nПроверка завершена.")
 
